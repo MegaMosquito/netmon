@@ -34,5 +34,6 @@ RUN git clone https://github.com/MegaMosquito/LAN2json.git
 RUN cd LAN2json; git clone https://github.com/MegaMosquito/rfc1340.git
 
 # Start up the daemon process
-CMD python netmon.py >/dev/null 2>&1
+#CMD python netmon.py >/dev/null 2>&1
+CMD python netmon.py
 

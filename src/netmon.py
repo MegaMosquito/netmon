@@ -73,7 +73,7 @@ db = DB( \
 
 # Output control (yeah, there are better ways to do this)
 def show(str):
-  #print(str)
+  # print(str)
   pass
 
 # Run the 'nmap' scan...
@@ -95,6 +95,8 @@ def scan():
       host = db.get(mac)
       if host:
         host['ip'] = ip
+        if not ('first_seen' in host):
+          host['first_seen'] = db.now()
         host['last_seen'] = db.now()
       else:
         host = Host.new_unknown_host(mac, ip, comment, db.now())

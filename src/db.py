@@ -187,9 +187,16 @@ class DB:
       existing['octet'] = other['octet']
       existing['infra'] = other['infra']
       existing['info'] = other['info']
-    if 'first_seen' in existing:
-      existing['first_seen'] = self.older(existing['first_seen'], other['first_seen'])
-      existing['last_seen'] = self.younger(existing['last_seen'], other['last_seen'])
+    if 'first_seen' in other:
+      if 'first_seen' in existing:
+        existing['first_seen'] = self.older(existing['first_seen'], other['first_seen'])
+      else:
+        existing['first_seen'] = other['first_seen']
+    if 'last_seen' in other:
+      if 'last_seen' in existing:
+        existing['last_seen'] = self.younger(existing['last_seen'], other['last_seen'])
+      else:
+        existing['last_seen'] = other['last_seen']
     return existing
 
   # Instance method to write one DB "host" document using MAC as '_id'
