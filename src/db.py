@@ -39,11 +39,12 @@ class Host:
     host['mac'] = kh['mac']
     host['known'] = True
     host['static'] = kh['static']
-    octet = None
+    octet = 999
     if 'octet' in kh: octet = kh['octet']
     host['octet'] = octet
     host['infra'] = kh['infra']
     host['info'] = kh['info']
+    host['ip'] = ''
     return host
 
   # Pseudo-constructor for discovered unknown hosts
@@ -54,6 +55,7 @@ class Host:
     host['mac'] = mac
     host['known'] = False
     host['ip'] = ip
+    host['octet'] = ip.split('.')[-1]
     host['info'] = info
     host['first_seen'] = now
     host['last_seen'] = now
@@ -180,13 +182,15 @@ class DB:
   # Instance method to merge an existing host with some updated data in an other
   def merge(self, existing, other):
     assert(existing['mac'] == other['mac'])
-    if 'ip' in other: existing['ip'] = other['ip']
     if other['known'] and not existing['known']:
       existing['known'] = True
       existing['static'] = other['static']
       existing['octet'] = other['octet']
       existing['infra'] = other['infra']
       existing['info'] = other['info']
+    if 'ip' in other:
+      existing['ip'] = other['ip']
+      existing['octet'] = other['ip'].split('.')[-1]
     if 'first_seen' in other:
       if 'first_seen' in existing:
         existing['first_seen'] = self.older(existing['first_seen'], other['first_seen'])
