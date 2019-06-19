@@ -99,21 +99,15 @@ class DB:
     # Connected!
     print("Connected to CouchDB server.")
 
-    # Try to open our "host" database
+    # Open or create our database
     print("Attempting to open the \"" + database + "\" DB...")
     if database in couchdbserver:
       self.db = couchdbserver[database]
     else:
-      # DB is not there, so create 3 standard DBs, and our host DB
-      print('Existing database not found.')
-      print('Performing initial database creation and configuration...')
-      users = couchdbserver.create('_users')
-      replicator = couchdbserver.create('_replicator')
-      global_changes = couchdbserver.create('_global_changes')
       self.db = couchdbserver.create(database)
 
     # Done!
-    print("DB is open and ready for use.")
+    print('CouchDB database "' + database + '" is open and ready for use.')
     sys.stdout.flush()
 
   # Instance method to get all the DB "host" documents
