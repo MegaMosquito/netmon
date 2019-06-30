@@ -89,7 +89,8 @@ def scan():
     i = 0
     for h in scanned_hosts:
       # show(json.dumps(h))
-      mac = h['mac']
+      # Force MAC address to use uppercase hexadecimal
+      mac = h['mac'].upper()
       ip = h['ip']
       comment = h['comment']
       host = db.get(mac)
@@ -152,6 +153,8 @@ if __name__ == '__main__':
 
   print("Found " + str(len(known_hosts)) + " hosts in known_hosts.py.")
   for kh in known_hosts:
+    # Force MAC address to use uppercase hexadecimal
+    kh['mac'] = kh['mac'].upper()
     h = Host.new_host_from_known_hosts(known_hosts, kh)
     db.put(h)
   print(str(db))

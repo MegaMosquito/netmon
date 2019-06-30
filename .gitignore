@@ -1,3 +1,6 @@
+# This file is copied in, overwriting the essentially blank one in the repo
+src/known_hosts.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

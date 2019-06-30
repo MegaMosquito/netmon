@@ -14,16 +14,24 @@
 # Written by Glen Darling (mosquito@darlingevil.com), December 2018.
 #
 
+# Some bits from https://github.com/MegaMosquito/netstuff/blob/master/Makefile
+LOCAL_DEFAULT_ROUTE     := $(shell sh -c "ip route | grep default")
+LOCAL_ROUTER_ADDRESS    := $(word 3, $(LOCAL_DEFAULT_ROUTE))
+LOCAL_DEFAULT_INTERFACE := $(word 5, $(LOCAL_DEFAULT_ROUTE))
+LOCAL_IP_ADDRESS        := $(word 7, $(LOCAL_DEFAULT_ROUTE))
+LOCAL_MAC_ADDRESS       := $(shell sh -c "ip link show | sed 'N;s/\n/ /' | grep $(LOCAL_DEFAULT_INTERFACE) | sed 's/.*ether //;s/ .*//;'")
+LOCAL_SUBNET_CIDR       := $(shell sh -c "echo $(wordlist 1, 3, $(subst ., ,$(LOCAL_IP_ADDRESS))) | sed 's/ /./g;s|.*|&.0/24|'")
+
 
 # Configure all of these "MY_" variables for your personal situation
 
-MY_SUBNET_CIDR            := '192.168.123.0/24'
+MY_SUBNET_CIDR            := $(LOCAL_SUBNET_CIDR)
 
-MY_NETMON_HOST_ADDRESS    := '192.168.123.3'
-MY_NETMON_HOST_MAC        := 'B8:27:EB:81:F4:79'
+MY_NETMON_HOST_ADDRESS    := $(LOCAL_IP_ADDRESS)
+MY_NETMON_HOST_MAC        := $(LOCAL_MAC_ADDRESS)
 MY_NETMON_HOST_COMMENT    := '(Network Monitor)'
 
-MY_COUCHDB_ADDRESS        := '192.168.123.3'
+MY_COUCHDB_ADDRESS        := $(LOCAL_IP_ADDRESS)
 MY_COUCHDB_PORT           := 5984
 MY_COUCHDB_USER           := 'admin'
 MY_COUCHDB_PASSWORD       := 'p4ssw0rd'
