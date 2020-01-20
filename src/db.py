@@ -146,7 +146,7 @@ class DB:
         # print("DB.get():  mac=" + mac + " <-- NOT FOUND! **********")
         doc = None
     except Exception as e:
-      print("*** Exception during DB.get(" + mac + ":")
+      print("*** Exception during DB.get(" + mac + "):")
       traceback.print_exc()
       doc = None
     return doc
@@ -212,7 +212,7 @@ class DB:
         # print("DB.put: [new] " + Host.to_str(doc))
         self.db.save(doc)
     except Exception as e:
-      print("*** Exception during DB.put(" + host['_id'] + ":")
+      print("*** Exception during DB.put(" + host['_id'] + "):")
       traceback.print_exc()
       doc = None
 
