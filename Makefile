@@ -34,13 +34,13 @@ MY_NETMON_HOST_COMMENT    := '(Network Monitor)'
 MY_COUCHDB_ADDRESS        := $(LOCAL_IP_ADDRESS)
 MY_COUCHDB_PORT           := 5984
 MY_COUCHDB_USER           := 'admin'
-MY_COUCHDB_PASSWORD       := 'p4ssw0rd'
+MY_COUCHDB_PASSWORD       := 'p4ssw0rd'  # *** CHANGE ME! ***
 MY_COUCHDB_MACHINE_DB     := 'lan_hosts'
 MY_COUCHDB_TIME_FORMAT    := '%Y-%m-%d %H:%M:%S'
 
-MY_BETWEEN_SCANS_SECONDS  := 20
-MY_IP_PERSISTS_MINUTES    := 60
-MY_FORGET_AFTER_DAYS      := 7
+MY_SCANNING_PAUSE_SEC     := 20  # Pause time between nmap scans (seconds)
+MY_IP_PERSISTS_MINUTES    := 60  # Remove IO addresses from DB after (minutes)
+MY_FORGET_AFTER_DAYS      := 7   # Delete DB entry if not seen for (days)
 
 
 # Running `make` with no target builds and runs netmon as a restarting daemon
@@ -54,42 +54,44 @@ build:
 # On entry to the container's bash shell, run `cd /outside/src` to work here.
 dev: build
 	-docker rm -f netmon 2> /dev/null || :
-	docker run -it --privileged --net=host \
-	    --name netmon \
-	    -e MY_SUBNET_CIDR=$(MY_SUBNET_CIDR) \
-	    -e MY_NETMON_HOST_ADDRESS=$(MY_NETMON_HOST_ADDRESS) \
-	    -e MY_NETMON_HOST_MAC=$(MY_NETMON_HOST_MAC) \
-	    -e MY_NETMON_HOST_COMMENT=$(MY_NETMON_HOST_COMMENT) \
-	    -e MY_COUCHDB_ADDRESS=$(MY_COUCHDB_ADDRESS) \
-	    -e MY_COUCHDB_PORT=$(MY_COUCHDB_PORT) \
-	    -e MY_COUCHDB_USER=$(MY_COUCHDB_USER) \
-	    -e MY_COUCHDB_PASSWORD=$(MY_COUCHDB_PASSWORD) \
-	    -e MY_COUCHDB_MACHINE_DB=$(MY_COUCHDB_MACHINE_DB) \
-	    -e MY_COUCHDB_TIME_FORMAT=$(MY_COUCHDB_TIME_FORMAT) \
-	    -e MY_BETWEEN_SCANS_SECONDS=$(MY_BETWEEN_SCANS_SECONDS) \
-	    -e MY_IP_PERSISTS_MINUTES=$(MY_IP_PERSISTS_MINUTES) \
-	    -e MY_FORGET_AFTER_DAYS=$(MY_FORGET_AFTER_DAYS) \
-	    --volume `pwd`:/outside netmon /bin/sh
+	docker run -it --volume `pwd`:/outside \
+	  --privileged --net=host \
+	  --name netmon \
+	  -e MY_SUBNET_CIDR=$(MY_SUBNET_CIDR) \
+	  -e MY_NETMON_HOST_ADDRESS=$(MY_NETMON_HOST_ADDRESS) \
+	  -e MY_NETMON_HOST_MAC=$(MY_NETMON_HOST_MAC) \
+	  -e MY_NETMON_HOST_COMMENT=$(MY_NETMON_HOST_COMMENT) \
+	  -e MY_COUCHDB_ADDRESS=$(MY_COUCHDB_ADDRESS) \
+	  -e MY_COUCHDB_PORT=$(MY_COUCHDB_PORT) \
+	  -e MY_COUCHDB_USER=$(MY_COUCHDB_USER) \
+	  -e MY_COUCHDB_PASSWORD=$(MY_COUCHDB_PASSWORD) \
+	  -e MY_COUCHDB_MACHINE_DB=$(MY_COUCHDB_MACHINE_DB) \
+	  -e MY_COUCHDB_TIME_FORMAT=$(MY_COUCHDB_TIME_FORMAT) \
+	  -e MY_SCANNING_PAUSE_SEC=$(MY_SCANNING_PAUSE_SEC) \
+	  -e MY_IP_PERSISTS_MINUTES=$(MY_IP_PERSISTS_MINUTES) \
+	  -e MY_FORGET_AFTER_DAYS=$(MY_FORGET_AFTER_DAYS) \
+	  netmon /bin/sh
 
 # Run the container as a daemon (build not forecd here, sp must build it first)
 run:
 	-docker rm -f netmon 2>/dev/null || :
-	docker run -d --privileged --net=host \
-	    --name netmon --restart unless-stopped \
-	    -e MY_SUBNET_CIDR=$(MY_SUBNET_CIDR) \
-	    -e MY_NETMON_HOST_ADDRESS=$(MY_NETMON_HOST_ADDRESS) \
-	    -e MY_NETMON_HOST_MAC=$(MY_NETMON_HOST_MAC) \
-	    -e MY_NETMON_HOST_COMMENT=$(MY_NETMON_HOST_COMMENT) \
-	    -e MY_COUCHDB_ADDRESS=$(MY_COUCHDB_ADDRESS) \
-	    -e MY_COUCHDB_PORT=$(MY_COUCHDB_PORT) \
-	    -e MY_COUCHDB_USER=$(MY_COUCHDB_USER) \
-	    -e MY_COUCHDB_PASSWORD=$(MY_COUCHDB_PASSWORD) \
-	    -e MY_COUCHDB_MACHINE_DB=$(MY_COUCHDB_MACHINE_DB) \
-	    -e MY_COUCHDB_TIME_FORMAT=$(MY_COUCHDB_TIME_FORMAT) \
-	    -e MY_BETWEEN_SCANS_SECONDS=$(MY_BETWEEN_SCANS_SECONDS) \
-	    -e MY_IP_PERSISTS_MINUTES=$(MY_IP_PERSISTS_MINUTES) \
-	    -e MY_FORGET_AFTER_DAYS=$(MY_FORGET_AFTER_DAYS) \
-	    netmon
+	docker run -d \
+	  --privileged --net=host \
+	  --name netmon --restart unless-stopped \
+	  -e MY_SUBNET_CIDR=$(MY_SUBNET_CIDR) \
+	  -e MY_NETMON_HOST_ADDRESS=$(MY_NETMON_HOST_ADDRESS) \
+	  -e MY_NETMON_HOST_MAC=$(MY_NETMON_HOST_MAC) \
+	  -e MY_NETMON_HOST_COMMENT=$(MY_NETMON_HOST_COMMENT) \
+	  -e MY_COUCHDB_ADDRESS=$(MY_COUCHDB_ADDRESS) \
+	  -e MY_COUCHDB_PORT=$(MY_COUCHDB_PORT) \
+	  -e MY_COUCHDB_USER=$(MY_COUCHDB_USER) \
+	  -e MY_COUCHDB_PASSWORD=$(MY_COUCHDB_PASSWORD) \
+	  -e MY_COUCHDB_MACHINE_DB=$(MY_COUCHDB_MACHINE_DB) \
+	  -e MY_COUCHDB_TIME_FORMAT=$(MY_COUCHDB_TIME_FORMAT) \
+	  -e MY_SCANNING_PAUSE_SEC=$(MY_SCANNING_PAUSE_SEC) \
+	  -e MY_IP_PERSISTS_MINUTES=$(MY_IP_PERSISTS_MINUTES) \
+	  -e MY_FORGET_AFTER_DAYS=$(MY_FORGET_AFTER_DAYS) \
+	  netmon
 
 # Enter the context of the daemon container
 exec:

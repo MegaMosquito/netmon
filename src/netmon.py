@@ -33,7 +33,7 @@ MY_COUCHDB_PASSWORD       = os.environ['MY_COUCHDB_PASSWORD']
 MY_COUCHDB_MACHINE_DB     = os.environ['MY_COUCHDB_MACHINE_DB']
 MY_COUCHDB_TIME_FORMAT    = os.environ['MY_COUCHDB_TIME_FORMAT']
 
-MY_BETWEEN_SCANS_SECONDS  = int(os.environ['MY_BETWEEN_SCANS_SECONDS'])
+MY_SCANNING_PAUSE_SEC     = int(os.environ['MY_SCANNING_PAUSE_SEC'])
 MY_IP_PERSISTS_MINUTES    = int(os.environ['MY_IP_PERSISTS_MINUTES'])
 MY_FORGET_AFTER_DAYS      = int(os.environ['MY_FORGET_AFTER_DAYS'])
 
@@ -73,7 +73,7 @@ db = DB( \
 
 # Output control (yeah, there are better ways to do this)
 def show(str):
-  print(str)
+  # print(str)
   pass
 
 # Run the 'nmap' scan...
@@ -174,6 +174,6 @@ if __name__ == '__main__':
     scan()
     if MY_IP_PERSISTS_MINUTES > 0 or MY_FORGET_AFTER_DAYS > 0:
       cleanup()
-    show("Sleeping...")
-    time.sleep(MY_BETWEEN_SCANS_SECONDS)
+    show("LAN monitor daemon is sleeping for " + str(MY_SCANNING_PAUSE_SEC) + "...")
+    time.sleep(MY_SCANNING_PAUSE_SEC)
 
