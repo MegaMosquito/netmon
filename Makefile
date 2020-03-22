@@ -75,9 +75,9 @@ dev: build
 # Run the container as a daemon (build not forecd here, sp must build it first)
 run:
 	-docker rm -f netmon 2>/dev/null || :
-	docker run -d \
+	docker run -d --restart unless-stopped \
 	  --privileged --net=host \
-	  --name netmon --restart unless-stopped \
+	  --name netmon \
 	  -e MY_SUBNET_CIDR=$(MY_SUBNET_CIDR) \
 	  -e MY_NETMON_HOST_ADDRESS=$(MY_NETMON_HOST_ADDRESS) \
 	  -e MY_NETMON_HOST_MAC=$(MY_NETMON_HOST_MAC) \
