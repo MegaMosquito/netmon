@@ -21,19 +21,20 @@ RUN apk --no-cache --update add nmap git
 # Install couchdb interface
 RUN pip install couchdb
 
-# Install convenience tools (may omit these in production)
-RUN apk --no-cache --update add vim curl jq
-
-# Copy over the netmon files
-RUN mkdir netmon
-WORKDIR /netmon
-COPY ./src/*.py /netmon/
-
 # Install LAN2json and rfc1340
+RUN mkdir /netmon
+WORKDIR /netmon
 RUN git clone https://github.com/MegaMosquito/LAN2json.git
 RUN cd LAN2json; git clone https://github.com/MegaMosquito/rfc1340.git
 
+# Install convenience tools (may omit these in production)
+RUN apk --no-cache --update add curl jq
+
+# Copy over the netmon files
+WORKDIR /netmon
+COPY ./src/*.py /netmon/
+
 # Start up the daemon process
-#CMD python netmon.py >/dev/null 2>&1
-CMD python netmon.py
+WORKDIR /netmon
+CMD python netmon.py >/dev/null 2>&1
 

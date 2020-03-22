@@ -73,7 +73,7 @@ db = DB( \
 
 # Output control (yeah, there are better ways to do this)
 def show(str):
-  # print(str)
+  print(str)
   pass
 
 # Run the 'nmap' scan...
@@ -85,26 +85,32 @@ def scan():
       MY_NETMON_HOST_ADDRESS, \
       MY_NETMON_HOST_MAC, \
       MY_NETMON_HOST_COMMENT)
-    show(str(len(scanned_hosts)) + " hosts were found on the LAN...")
-    i = 0
-    for h in scanned_hosts:
-      # show(json.dumps(h))
-      # Force MAC address to use uppercase hexadecimal
-      mac = h['mac'].upper()
-      ip = h['ip']
-      comment = h['comment']
-      host = db.get(mac)
-      if host:
-        host['ip'] = ip
-        if not ('first_seen' in host):
-          host['first_seen'] = db.now()
-        host['last_seen'] = db.now()
-      else:
-        host = Host.new_unknown_host(mac, ip, comment, db.now())
-      if not host['known']:
-        i += 1
-      db.put(host)
-    show(str(i) + " of those hosts have *unknown* MAC addresses.")
+    n = len(scanned_hosts)
+    if n > 0:
+      show("  " + str(n) + " hosts were found on the LAN:")
+      show("  IP Address       MAC Address        Last seen time")
+      show("  ---------------  -----------------  -------------------")
+      i = 0
+      for h in scanned_hosts:
+        # show(json.dumps(h))
+        # Force MAC address to use uppercase hexadecimal
+        mac = h['mac'].upper()
+        ip = h['ip']
+        comment = h['comment']
+        existing = db.get(mac)
+        if existing:
+          existing['ip'] = ip
+          if not ('first_seen' in existing):
+            print("ERROR: Existing host %s has no 'first_seen' field!" % mac)
+            existing['first_seen'] = db.now()
+          existing['last_seen'] = db.now()
+        else:
+          existing = Host.new_unknown_host(mac, ip, comment, db.now())
+        if not existing['known']:
+          i += 1
+        show("  %-15s  %s  %s" % (ip, mac, existing['last_seen']))
+        db.put(existing)
+      show("  " + str(i) + " of those hosts have *unknown* MAC addresses.")
   except Exception as e:
     print("*** Exception during scanning:")
     traceback.print_exc()
@@ -139,10 +145,13 @@ def cleanup():
             db.delete(h['mac'])
             u += 1
 
-    if i > 0:
-      show("Cleared IP addresses from " + str(i) + " hosts in the DB.")
-    if u > 0:
-      show("Deleted " + str(i) + " *unknown* hosts from the DB.")
+    if i == 0 and u == 0:
+      show("  Nothing to cleanup at this time.")
+    else:
+      if i > 0:
+        show("  Cleared IP addresses from " + str(i) + " hosts in the DB.")
+      if u > 0:
+        show("  Deleted " + str(i) + " *unknown* hosts from the DB.")
   except Exception as e:
     print("*** Exception during cleaning:")
     traceback.print_exc()
@@ -163,7 +172,8 @@ if __name__ == '__main__':
   print("Starting LAN monitor daemon...")
   while True:
     scan()
-    cleanup()
+    if MY_IP_PERSISTS_MINUTES > 0 or MY_FORGET_AFTER_DAYS > 0:
+      cleanup()
     show("Sleeping...")
     time.sleep(MY_BETWEEN_SCANS_SECONDS)
 

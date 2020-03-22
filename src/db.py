@@ -122,7 +122,7 @@ class DB:
   def seconds_since(self, t):
     then = datetime.datetime.strptime(t, self.time_format)
     now = datetime.datetime.now()
-    return now.total_seconds() - then.total_seconds()
+    return (now - then).total_seconds()
 
   # Instance method to delete a "host" document from the DB using MAC as '_id'
   def delete(self, mac):

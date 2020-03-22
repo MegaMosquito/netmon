@@ -38,9 +38,9 @@ MY_COUCHDB_PASSWORD       := 'p4ssw0rd'
 MY_COUCHDB_MACHINE_DB     := 'lan_hosts'
 MY_COUCHDB_TIME_FORMAT    := '%Y-%m-%d %H:%M:%S'
 
-MY_BETWEEN_SCANS_SECONDS  := 90
-MY_IP_PERSISTS_MINUTES    := 0
-MY_FORGET_AFTER_DAYS      := 0
+MY_BETWEEN_SCANS_SECONDS  := 20
+MY_IP_PERSISTS_MINUTES    := 60
+MY_FORGET_AFTER_DAYS      := 7
 
 
 # Running `make` with no target builds and runs netmon as a restarting daemon
