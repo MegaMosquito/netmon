@@ -15,7 +15,7 @@
 #
 
 # Some bits from https://github.com/MegaMosquito/netstuff/blob/master/Makefile
-LOCAL_DEFAULT_ROUTE     := $(shell sh -c "ip route | grep default")
+LOCAL_DEFAULT_ROUTE     := $(shell sh -c "ip route | grep default | sed 's/dhcp src //'")
 LOCAL_ROUTER_ADDRESS    := $(word 3, $(LOCAL_DEFAULT_ROUTE))
 LOCAL_DEFAULT_INTERFACE := $(word 5, $(LOCAL_DEFAULT_ROUTE))
 LOCAL_IP_ADDRESS        := $(word 7, $(LOCAL_DEFAULT_ROUTE))

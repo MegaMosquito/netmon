@@ -101,7 +101,6 @@ def scan():
         if existing:
           existing['ip'] = ip
           if not ('first_seen' in existing):
-            print("ERROR: Existing host %s has no 'first_seen' field!" % mac)
             existing['first_seen'] = db.now()
           existing['last_seen'] = db.now()
         else:

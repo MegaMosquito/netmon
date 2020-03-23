@@ -22,11 +22,11 @@ class Host:
     host['_rev'] = rev
     host['mac'] = mac
     host['known'] = known
-    host['ip'] = ip
     host['static'] = static
     host['octet'] = octet
     host['infra'] = infra
     host['info'] = info
+    host['ip'] = ip
     host['first_seen'] = first_seen
     host['last_seen'] = last_seen
     return host
@@ -38,13 +38,24 @@ class Host:
     host['_id'] = kh['mac']
     host['mac'] = kh['mac']
     host['known'] = True
-    host['static'] = kh['static']
     octet = 999
-    if 'octet' in kh: octet = kh['octet']
+    stat = False
+    if 'octet' in kh:
+      octet = kh['octet']
+      stat = True
     host['octet'] = octet
-    host['infra'] = kh['infra']
-    host['info'] = kh['info']
+    host['static'] = stat
+    infra = False
+    if 'infra' in kh and kh['infra']:
+      infra = True
+    host['infra'] = infra
+    info = '(no info provided)'
+    if 'info' in kh:
+      info = kh['info']
+    host['info'] = info
     host['ip'] = ''
+    host['first_seen'] = None
+    host['last_seen'] = None
     return host
 
   # Pseudo-constructor for discovered unknown hosts
