@@ -13,10 +13,10 @@
 #
 
 # This should build and run on any Raspberry Pi0W, Pi2*, Pi3*, and other ARM.
-FROM arm32v6/python:3-alpine
+FROM balenalib/rpi-debian-python:latest
 
 # Install required modules and tools
-RUN apk --no-cache --update add nmap git
+RUN apt update && apt install -y nmap git
 
 # Install couchdb interface
 RUN pip install couchdb
@@ -28,7 +28,7 @@ RUN git clone https://github.com/MegaMosquito/LAN2json.git
 RUN cd LAN2json; git clone https://github.com/MegaMosquito/rfc1340.git
 
 # Install convenience tools (may omit these in production)
-RUN apk --no-cache --update add curl jq
+RUN apt install -y curl jq
 
 # Copy over the netmon files
 WORKDIR /netmon

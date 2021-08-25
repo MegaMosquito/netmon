@@ -73,7 +73,7 @@ db = DB( \
 
 # Output control (yeah, there are better ways to do this)
 def show(str):
-  # print(str)
+  #print(str)
   pass
 
 # Run the 'nmap' scan...
@@ -88,8 +88,8 @@ def scan():
     n = len(scanned_hosts)
     if n > 0:
       show("  " + str(n) + " hosts were found on the LAN:")
-      show("  IP Address       MAC Address        Last seen time")
-      show("  ---------------  -----------------  -------------------")
+      show("  IP Address       MAC Address        First seen time     Last seen time")
+      show("  ---------------  -----------------  ------------------- -------------------")
       i = 0
       for h in scanned_hosts:
         # show(json.dumps(h))
@@ -98,16 +98,16 @@ def scan():
         ip = h['ip']
         comment = h['comment']
         existing = db.get(mac)
-        if existing:
-          existing['ip'] = ip
-          if not ('first_seen' in existing):
-            existing['first_seen'] = db.now()
-          existing['last_seen'] = db.now()
-        else:
+        if not existing:
           existing = Host.new_unknown_host(mac, ip, comment, db.now())
-        if not existing['known']:
+        if (not ('first_seen' in existing)) or (not existing['first_seen']):
+          existing['first_seen'] = db.now()
+        existing['last_seen'] = db.now()
+        # IP might have changed from when it was previously seen
+        existing['ip'] = ip
+        if (not ('known' in existing)) or (not existing['known']):
           i += 1
-        show("  %-15s  %s  %s" % (ip, mac, existing['last_seen']))
+        show("  %-15s  %s  %s %s" % (ip, mac, existing['first_seen'], existing['last_seen']))
         db.put(existing)
       show("  " + str(i) + " of those hosts have *unknown* MAC addresses.")
   except Exception as e:
